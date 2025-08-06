@@ -12,13 +12,69 @@ import "./App.css";
 
 const FleetManagementApp = () => {
   const [currentView, setCurrentView] = useState("dashboard");
-  const [vehicles, setVehicles] = useState([]);
 
-  const [expenses, setExpenses] = useState([]);
+  // Função para carregar dados do localStorage
+  const loadFromStorage = (key, defaultValue) => {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+      console.error(`Erro ao carregar ${key} do localStorage:`, error);
+      return defaultValue;
+    }
+  };
+
+  // Função para salvar dados no localStorage
+  const saveToStorage = (key, data) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Erro ao salvar ${key} no localStorage:`, error);
+    }
+  };
+
+  // Dados iniciais (só serão usados se não houver dados salvos)
+  const initialVehicles = [
+    {
+      id: 2,
+      plate: "DEF-5678",
+      model: "Toyota Corolla",
+      store: "Loja 2",
+      year: 2019,
+    },
+  ];
+
+  const initialExpenses = [
+    {
+      id: 3,
+      vehicleId: 2,
+      type: "combustivel",
+      amount: 200.75,
+      date: "2024-08-03",
+      description: "Abastecimento",
+    },
+  ];
+
+  // Estados com dados do localStorage
+  const [vehicles, setVehicles] = useState(() =>
+    loadFromStorage("fleet_vehicles", initialVehicles)
+  );
+  const [expenses, setExpenses] = useState(() =>
+    loadFromStorage("fleet_expenses", initialExpenses)
+  );
 
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const [editingItem, setEditingItem] = useState(null);
+
+  // Salvar automaticamente quando os dados mudarem
+  useEffect(() => {
+    saveToStorage("fleet_vehicles", vehicles);
+  }, [vehicles]);
+
+  useEffect(() => {
+    saveToStorage("fleet_expenses", expenses);
+  }, [expenses]);
 
   const expenseTypes = {
     combustivel: "Combustível",
@@ -50,6 +106,62 @@ const FleetManagementApp = () => {
   };
 
   const getVehicleById = (id) => vehicles.find((v) => v.id === id);
+
+  // Função para limpar todos os dados (útil para reset)
+  const clearAllData = () => {
+    // eslint-disable-next-line no-alert, no-restricted-globals
+    if (confirm("Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.")) {
+ localStorage.removeItem("fleet_vehicles");
+ localStorage.removeItem("fleet_expenses");
+ setVehicles(initialVehicles);
+ setExpenses(initialExpenses);
+    }
+  };
+
+  // Função para exportar dados
+  const exportData = () => {
+    const data = {
+      vehicles,
+      expenses,
+      exportDate: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `frota-backup-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Função para importar dados
+  const importData = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.vehicles && data.expenses) {
+            setVehicles(data.vehicles);
+            setExpenses(data.expenses);
+            alert("Dados importados com sucesso!");
+          } else {
+            alert("Arquivo inválido. Verifique o formato dos dados.");
+          }
+        } catch (error) {
+          alert(
+            "Erro ao importar dados. Verifique se o arquivo está no formato correto."
+          );
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
 
   // Componente Dashboard
   const Dashboard = () => {
@@ -139,7 +251,32 @@ const FleetManagementApp = () => {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Últimos Gastos</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold">Últimos Gastos</h3>
+            <div className="flex space-x-2">
+              <button
+                onClick={exportData}
+                className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+              >
+                Exportar Dados
+              </button>
+              <label className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 cursor-pointer">
+                Importar Dados
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={importData}
+                  className="hidden"
+                />
+              </label>
+              <button
+                onClick={clearAllData}
+                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+              >
+                Limpar Dados
+              </button>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full table-auto">
               <thead>
