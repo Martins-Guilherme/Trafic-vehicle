@@ -1,3 +1,4 @@
+![Imagem da aplicação](image.png)
 
 Um projeto de controle de frota desenvolvido em React, utilizando localStorage para a persistência dos dados. A aplicação oferece uma interface para gerenciar gastos e veículos por loja.
 
@@ -18,7 +19,6 @@ Tecnologias Utilizadas:
     localStorage
 
     Tailwind CSS
-
 
 Como Executar:
 
