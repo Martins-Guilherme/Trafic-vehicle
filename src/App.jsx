@@ -513,7 +513,10 @@ const FleetManagementApp = () => {
                 {filteredExpenses.map((expense) => {
                   const vehicle = getVehicleById(expense.vehicleId);
                   return (
-                    <tr key={expense.id} className="border-b hover:bg-gray-50 text-center">
+                    <tr
+                      key={expense.id}
+                      className="border-b hover:bg-gray-50 text-center"
+                    >
                       <td className="px-3">
                         {new Date(expense.date).toLocaleDateString("pt-BR")}
                       </td>
@@ -817,7 +820,7 @@ const FleetManagementApp = () => {
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-6">
+          <div className="flex items-center justify-between py-6">
             <div className="flex items-center ">
               <Car className="h-8 w-8 text-blue-600 mr-2" />
               <h1 className="text-2xl font-bold text-gray-900 text-center">
