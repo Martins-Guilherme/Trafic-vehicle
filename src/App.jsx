@@ -34,26 +34,9 @@ const FleetManagementApp = () => {
   };
 
   // Dados iniciais (só serão usados se não houver dados salvos)
-  const initialVehicles = [
-    {
-      id: 2,
-      plate: "DEF-5678",
-      model: "Toyota Corolla",
-      store: "Loja 2",
-      year: 2019,
-    },
-  ];
+  const initialVehicles = [];
 
-  const initialExpenses = [
-    {
-      id: 3,
-      vehicleId: 2,
-      type: "combustivel",
-      amount: 200.75,
-      date: "2024-08-03",
-      description: "Abastecimento",
-    },
-  ];
+  const initialExpenses = [];
 
   // Estados com dados do localStorage
   const [vehicles, setVehicles] = useState(() =>
@@ -109,12 +92,16 @@ const FleetManagementApp = () => {
 
   // Função para limpar todos os dados (útil para reset)
   const clearAllData = () => {
-    // eslint-disable-next-line no-alert, no-restricted-globals
-    if (confirm("Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.")) {
- localStorage.removeItem("fleet_vehicles");
- localStorage.removeItem("fleet_expenses");
- setVehicles(initialVehicles);
- setExpenses(initialExpenses);
+    if (
+      // eslint-disable-next-line no-alert, no-restricted-globals
+      confirm(
+        "Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita."
+      )
+    ) {
+      localStorage.removeItem("fleet_vehicles");
+      localStorage.removeItem("fleet_expenses");
+      setVehicles(initialVehicles);
+      setExpenses(initialExpenses);
     }
   };
 
@@ -256,11 +243,11 @@ const FleetManagementApp = () => {
             <div className="flex space-x-2">
               <button
                 onClick={exportData}
-                className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                className="bg-green-600 text-white px-2 py-2 rounded text-xs hover:bg-green-700"
               >
                 Exportar Dados
               </button>
-              <label className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 cursor-pointer">
+              <label className="bg-blue-600 text-white px-2 py-2 rounded text-xs hover:bg-blue-700 cursor-pointer">
                 Importar Dados
                 <input
                   type="file"
@@ -271,7 +258,7 @@ const FleetManagementApp = () => {
               </label>
               <button
                 onClick={clearAllData}
-                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                className="bg-red-600 text-white px-2 py-2 rounded text-xs hover:bg-red-700"
               >
                 Limpar Dados
               </button>
@@ -297,19 +284,19 @@ const FleetManagementApp = () => {
                     return (
                       <tr
                         key={expense.id}
-                        className="border-b hover:bg-gray-50"
+                        className="border-b px-2 hover:bg-gray-50"
                       >
-                        <td className="py-2">
+                        <td className="px-3">
                           {new Date(expense.date).toLocaleDateString("pt-BR")}
                         </td>
-                        <td className="py-2">{vehicle?.plate}</td>
-                        <td className="py-2">{expenseTypes[expense.type]}</td>
-                        <td className="py-2 font-semibold">
+                        <td className="px-2">{vehicle?.plate}</td>
+                        <td className="px-2">{expenseTypes[expense.type]}</td>
+                        <td className="px-2 font-semibold">
                           R$ {expense.amount.toFixed(2)}
                         </td>
-                        <td className="py-2">
+                        <td className="px-3">
                           <span
-                            className={`px-2 py-1 rounded text-xs ${
+                            className={`px-1 py-1 rounded text-left text-xs ${
                               vehicle?.store === "Loja 1"
                                 ? "bg-blue-100 text-blue-800"
                                 : "bg-green-100 text-green-800"
@@ -526,14 +513,14 @@ const FleetManagementApp = () => {
                 {filteredExpenses.map((expense) => {
                   const vehicle = getVehicleById(expense.vehicleId);
                   return (
-                    <tr key={expense.id} className="border-b hover:bg-gray-50">
-                      <td className="py-3">
+                    <tr key={expense.id} className="border-b hover:bg-gray-50 text-center">
+                      <td className="px-3">
                         {new Date(expense.date).toLocaleDateString("pt-BR")}
                       </td>
-                      <td className="py-3">{vehicle?.plate}</td>
-                      <td className="py-3">
+                      <td className="px-3">{vehicle?.plate}</td>
+                      <td className="px-4">
                         <span
-                          className={`px-2 py-1 rounded text-xs ${
+                          className={`px-1 py-1 rounded text-xs ${
                             vehicle?.store === "Loja 1"
                               ? "bg-blue-100 text-blue-800"
                               : "bg-green-100 text-green-800"
@@ -542,12 +529,12 @@ const FleetManagementApp = () => {
                           {vehicle?.store}
                         </span>
                       </td>
-                      <td className="py-3">{expenseTypes[expense.type]}</td>
-                      <td className="py-3">{expense.description}</td>
-                      <td className="py-3 font-semibold">
+                      <td className="px-4">{expenseTypes[expense.type]}</td>
+                      <td className="px-3">{expense.description}</td>
+                      <td className="px-5 font-semibold">
                         R$ {expense.amount.toFixed(2)}
                       </td>
-                      <td className="py-3">
+                      <td className="px-3">
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEditExpense(expense)}
@@ -830,12 +817,15 @@ const FleetManagementApp = () => {
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Car className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">
+          <div className="flex items-center py-6">
+            <div className="flex items-center ">
+              <Car className="h-8 w-8 text-blue-600 mr-2" />
+              <h1 className="text-2xl font-bold text-gray-900 text-center">
                 Controle de Frota
               </h1>
+            </div>
+            <div className="mr-0 p-2 rounded-lg w-fill flex items-center">
+              <img src="./logo.png" alt="Imagem da logo" />
             </div>
           </div>
         </div>
